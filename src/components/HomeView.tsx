@@ -4,7 +4,7 @@ import { Camera, Upload, Bell, User, History, CheckCircle2, AlertTriangle, Info,
 interface HomeViewProps {
     onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onViewChange: (view: string) => void;
-    fileInputRef: React.RefObject<HTMLInputElement>;
+    fileInputRef: React.RefObject<HTMLInputElement | null>;
 }
 
 const HomeView: React.FC<HomeViewProps> = ({ onImageUpload, onViewChange, fileInputRef }) => {
@@ -133,8 +133,8 @@ const HomeView: React.FC<HomeViewProps> = ({ onImageUpload, onViewChange, fileIn
                         onDragOver={handleDragOver}
                         onDrop={handleDrop}
                         className={`relative w-full border-2 border-dashed rounded-xl p-8 md:p-12 transition-all duration-300 ${isDragOver
-                                ? 'border-green-400 bg-green-50 scale-105'
-                                : 'border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50'
+                            ? 'border-green-400 bg-green-50 scale-105'
+                            : 'border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50'
                             }`}
                     >
                         <div className="text-center">
