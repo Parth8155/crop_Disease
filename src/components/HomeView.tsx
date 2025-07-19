@@ -4,7 +4,7 @@ import { Camera, Upload, Bell, User, History, CheckCircle2, AlertTriangle, Info,
 interface HomeViewProps {
     onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onViewChange: (view: string) => void;
-    fileInputRef: React.RefObject<HTMLInputElement>;
+    fileInputRef: React.RefObject<HTMLInputElement | null>;
 }
 
 const HomeView: React.FC<HomeViewProps> = ({ onImageUpload, onViewChange, fileInputRef }) => {
