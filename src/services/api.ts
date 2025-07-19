@@ -1,6 +1,7 @@
 // API configuration and services for crop disease detection
 
-const API_BASE_URL = 'http://localhost:8000';
+// Use environment variable for API URL, fallback to production URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://crop-backend-api-b8byddeccga5cug5.australiacentral-01.azurewebsites.net';
 
 export interface PredictionResponse {
   disease: string;
@@ -30,7 +31,15 @@ class CropDiseaseAPI {
    */
   async healthCheck(): Promise<ApiResponse<any>> {
     try {
-      const response = await fetch(`${this.baseUrl}/`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+      const response = await fetch(`${this.baseUrl}/health`, {
+        method: 'GET',
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
       const data = await response.json();
       
       if (response.ok) {
@@ -39,6 +48,9 @@ class CropDiseaseAPI {
         return { success: false, error: 'API health check failed' };
       }
     } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        return { success: false, error: 'Request timeout - Backend may be starting up' };
+      }
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Network error' 
@@ -66,12 +78,20 @@ class CropDiseaseAPI {
       const formData = new FormData();
       formData.append('file', imageFile);
 
-      // Make API request
+      // Make API request with timeout and proper headers
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
       const response = await fetch(`${this.baseUrl}/predict`, {
         method: 'POST',
         body: formData,
+        signal: controller.signal,
+        headers: {
+          // Don't set Content-Type for FormData, let browser set it with boundary
+        }
       });
 
+      clearTimeout(timeoutId);
       const data = await response.json();
 
       if (response.ok) {
