@@ -7,15 +7,13 @@ interface ResultsViewProps {
     results: AnalysisResult | null;
     onBack: () => void;
     onNewScan: () => void;
-    onSaveResult: () => void;
 }
 
 const ResultsView: React.FC<ResultsViewProps> = ({
     selectedImage,
     results,
     onBack,
-    onNewScan,
-    onSaveResult
+    onNewScan
 }) => {
     return (
         <div className="min-h-screen bg-gray-50">
@@ -153,19 +151,13 @@ const ResultsView: React.FC<ResultsViewProps> = ({
                             </div>
                         </div>
 
-                        {/* Action Buttons */}
-                        <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 md:space-x-4 pb-6 lg:pb-8">
+                        {/* Action Button */}
+                        <div className="pb-6 lg:pb-8">
                             <button
                                 onClick={onNewScan}
-                                className="flex-1 bg-white border-2 border-gray-300 text-gray-700 py-3 md:py-4 px-4 md:px-6 rounded-xl hover:bg-gray-50 transition-all duration-200 font-medium text-sm md:text-base"
+                                className="w-full bg-black text-white py-3 md:py-4 px-4 md:px-6 rounded-xl hover:bg-gray-900 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-sm md:text-base"
                             >
                                 Scan Another
-                            </button>
-                            <button
-                                onClick={onSaveResult}
-                                className="flex-1 bg-black text-white py-3 md:py-4 px-4 md:px-6 rounded-xl hover:bg-gray-900 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-sm md:text-base"
-                            >
-                                Save Result
                             </button>
                         </div>
                     </div>

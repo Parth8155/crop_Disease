@@ -89,74 +89,6 @@ const CropDiseaseDetector = () => {
         setCurrentView('home');
     };
 
-    const handleSaveResult = () => {
-        // Enhanced save functionality with comprehensive data
-        if (results && selectedFile) {
-            try {
-                const analysisData = {
-                    timestamp: new Date().toISOString(),
-                    image: {
-                        name: selectedFile.name,
-                        size: selectedFile.size,
-                        type: selectedFile.type,
-                        lastModified: selectedFile.lastModified
-                    },
-                    analysis: {
-                        disease: results.disease,
-                        confidence: results.confidence,
-                        severity: results.severity,
-                        isHealthy: results.isHealthy
-                    },
-                    treatment: {
-                        recommendations: results.treatment,
-                        prevention: results.prevention,
-                        description: results.description
-                    },
-                    application: {
-                        name: "CropScan - AI Disease Detection",
-                        version: "1.0.0",
-                        url: window.location.origin
-                    }
-                };
-
-                const dataStr = JSON.stringify(analysisData, null, 2);
-                const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                const url = URL.createObjectURL(dataBlob);
-                const link = document.createElement('a');
-                link.href = url;
-                
-                // Generate filename with disease name and timestamp
-                const diseaseSlug = results.disease.toLowerCase().replace(/[^a-z0-9]/g, '-');
-                const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-                link.download = `crop-analysis-${diseaseSlug}-${timestamp}.json`;
-                
-                // Trigger download
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-                
-                // Show success message (temporary)
-                const originalText = document.querySelector('[onclick*="onSaveResult"]')?.textContent;
-                const saveButton = document.querySelector('[onclick*="onSaveResult"]') as HTMLButtonElement;
-                if (saveButton) {
-                    saveButton.textContent = 'Saved! ✓';
-                    setTimeout(() => {
-                        saveButton.textContent = originalText || 'Save Result';
-                    }, 2000);
-                }
-                
-                console.log('Analysis results saved to JSON file:', `crop-analysis-${diseaseSlug}-${timestamp}.json`);
-            } catch (error) {
-                console.error('Error saving results:', error);
-                setError('Failed to save results. Please try again.');
-            }
-        } else {
-            console.warn('No results or image file available to save');
-            setError('No analysis results to save');
-        }
-    };
-
     const handleViewChange = (view: string) => {
         setError(null); // Clear error when changing views
         setCurrentView(view);
@@ -199,7 +131,6 @@ const CropDiseaseDetector = () => {
                     results={results}
                     onBack={() => setCurrentView('analyze')}
                     onNewScan={handleNewScan}
-                    onSaveResult={handleSaveResult}
                 />
             )}
             {currentView === 'about' && (
