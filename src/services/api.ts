@@ -1,7 +1,7 @@
 // API configuration and services for crop disease detection
 
 // Use environment variable for API URL, fallback to production URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://crop-backend-api-b8byddeccga5cug5.australiacentral-01.azurewebsites.net';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://crop-backend-api-b8byddeccga5cug5.centralindia-01.azurewebsites.net';
 
 export interface PredictionResponse {
   disease: string;
@@ -24,6 +24,29 @@ class CropDiseaseAPI {
 
   constructor(baseUrl: string = API_BASE_URL) {
     this.baseUrl = baseUrl;
+    // Debug logging to help identify URL issues
+    console.log('🔗 API Base URL:', this.baseUrl);
+    console.log('🌐 Environment VITE_API_URL:', import.meta.env.VITE_API_URL);
+    console.log('🏠 Current Origin:', window.location.origin);
+  }
+
+  /**
+   * Test CORS configuration
+   */
+  async testCORS(): Promise<ApiResponse<any>> {
+    try {
+      console.log('🧪 Testing CORS configuration...');
+      const response = await fetch(`${this.baseUrl}/cors-debug`);
+      const data = await response.json();
+      console.log('🔍 CORS Debug Response:', data);
+      return { success: true, data };
+    } catch (error) {
+      console.error('❌ CORS Test Failed:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'CORS test failed' 
+      };
+    }
   }
 
   /**
@@ -78,11 +101,15 @@ class CropDiseaseAPI {
       const formData = new FormData();
       formData.append('file', imageFile);
 
+      // Debug logging
+      const predictUrl = `${this.baseUrl}/predict`;
+      console.log('🎯 Making prediction request to:', predictUrl);
+
       // Make API request with timeout and proper headers
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-      const response = await fetch(`${this.baseUrl}/predict`, {
+      const response = await fetch(predictUrl, {
         method: 'POST',
         body: formData,
         signal: controller.signal,

@@ -10,14 +10,6 @@ interface ResultsViewProps {
     onSaveResult: () => void;
 }
 
-interface ResultsViewProps {
-    selectedImage: string | null;
-    results: AnalysisResult | null;
-    onBack: () => void;
-    onNewScan: () => void;
-    onSaveResult: () => void;
-}
-
 const ResultsView: React.FC<ResultsViewProps> = ({
     selectedImage,
     results,

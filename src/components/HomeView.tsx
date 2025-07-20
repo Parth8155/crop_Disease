@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera, Upload, Bell, User, History, CheckCircle2, AlertTriangle, Info, Bookmark } from 'lucide-react';
+import { Camera, Upload, Bell, User, Info, Bookmark } from 'lucide-react';
 
 interface HomeViewProps {
     onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -195,7 +195,7 @@ const HomeView: React.FC<HomeViewProps> = ({ onImageUpload, onViewChange, fileIn
                 </div>
 
                 {/* Content Grid for Desktop */}
-                <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
+                <div className="grid lg:grid-cols-1 gap-6 lg:gap-8">
                     {/* Supported Crops */}
                     <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100">
                         <h3 className="font-semibold text-gray-900 mb-3 md:mb-4 flex items-center text-base md:text-lg">
@@ -219,35 +219,6 @@ const HomeView: React.FC<HomeViewProps> = ({ onImageUpload, onViewChange, fileIn
                                     </div>
                                 </div>
                             ))}
-                        </div>
-                    </div>
-
-                    {/* Recent Scans */}
-                    <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100">
-                        <div className="flex items-center justify-between mb-3 md:mb-4">
-                            <h3 className="font-semibold text-gray-900 flex items-center text-base md:text-lg">
-                                <History size={16} className="mr-2 text-gray-500 md:w-5 md:h-5" />
-                                Recent Scans
-                            </h3>
-                            <button className="text-sm md:text-base text-blue-600 hover:text-blue-700">View All</button>
-                        </div>
-                        <div className="space-y-2 md:space-y-3">
-                            <div className="flex items-center space-x-3 p-2 md:p-3 hover:bg-gray-50 rounded-lg">
-                                <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-200 rounded-lg"></div>
-                                <div className="flex-1">
-                                    <div className="text-sm md:text-base font-medium">Cassava - Healthy</div>
-                                    <div className="text-xs md:text-sm text-gray-500">2 hours ago</div>
-                                </div>
-                                <CheckCircle2 size={16} className="text-green-500 md:w-5 md:h-5" />
-                            </div>
-                            <div className="flex items-center space-x-3 p-2 md:p-3 hover:bg-gray-50 rounded-lg">
-                                <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-200 rounded-lg"></div>
-                                <div className="flex-1">
-                                    <div className="text-sm md:text-base font-medium">Tomato - Early Blight</div>
-                                    <div className="text-xs md:text-sm text-gray-500">1 day ago</div>
-                                </div>
-                                <AlertTriangle size={16} className="text-red-500 md:w-5 md:h-5" />
-                            </div>
                         </div>
                     </div>
                 </div>

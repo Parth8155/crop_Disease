@@ -1,0 +1,35 @@
+{
+    "routes": [
+        {
+            "route": "/api/*",
+            "allowedRoles": [
+                "anonymous"
+            ]
+        },
+        {
+            "route": "/*",
+            "serve": "/index.html",
+            "statusCode": 200
+        }
+    ],
+    "navigationFallback": {
+        "rewrite": "/index.html",
+        "exclude": [
+            "/assets/*",
+            "/favicon.ico",
+            "/manifest.json"
+        ]
+    },
+    "mimeTypes": {
+        ".json": "application/json",
+        ".js": "application/javascript",
+        ".css": "text/css",
+        ".woff": "font/woff",
+        ".woff2": "font/woff2"
+    },
+    "globalHeaders": {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "Content-Security-Policy": "default-src 'self' https://crop-backend-api-b8byddeccga5cug5.centralindia-01.azurewebsites.net; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://crop-backend-api-b8byddeccga5cug5.centralindia-01.azurewebsites.net"
+    }
+}
