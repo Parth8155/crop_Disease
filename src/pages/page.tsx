@@ -27,18 +27,93 @@ const CropDiseaseDetector = () => {
         }
 
         try {
+            // Compress image if it's too large (especially for mobile photos)
+            const compressedFile = await compressImageIfNeeded(file);
+            
             // Convert to base64 for preview
-            const base64 = await cropDiseaseAPI.fileToBase64(file);
+            const base64 = await cropDiseaseAPI.fileToBase64(compressedFile);
 
-            setSelectedFile(file);
+            setSelectedFile(compressedFile);
             setSelectedImage(base64);
             setResults(null);
             setError(null);
             setCurrentView('analyze');
         } catch (error) {
-            setError('Failed to process image');
+            setError('Failed to process image. Try using a smaller image or restart the app.');
             console.error('Image processing error:', error);
         }
+    };
+
+    // Helper function to compress images for mobile devices
+    const compressImageIfNeeded = async (file: File): Promise<File> => {
+        return new Promise((resolve) => {
+            // If file is small enough, return as-is
+            if (file.size <= 2 * 1024 * 1024) { // 2MB threshold
+                resolve(file);
+                return;
+            }
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            img.onload = () => {
+                try {
+                    // Calculate new dimensions (max 1024px on longest side)
+                    const maxSize = 1024;
+                    let { width, height } = img;
+                    
+                    if (width > height) {
+                        if (width > maxSize) {
+                            height = (height * maxSize) / width;
+                            width = maxSize;
+                        }
+                    } else {
+                        if (height > maxSize) {
+                            width = (width * maxSize) / height;
+                            height = maxSize;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    // Draw and compress
+                    ctx?.drawImage(img, 0, 0, width, height);
+                    
+                    canvas.toBlob(
+                        (blob) => {
+                            if (blob) {
+                                const compressedFile = new File([blob], file.name, {
+                                    type: 'image/jpeg',
+                                    lastModified: Date.now(),
+                                });
+                                console.log(`Image compressed: ${(file.size / 1024 / 1024).toFixed(2)}MB → ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
+                                resolve(compressedFile);
+                            } else {
+                                resolve(file); // Fallback to original
+                            }
+                            // Clean up memory
+                            URL.revokeObjectURL(img.src);
+                        },
+                        'image/jpeg',
+                        0.8 // 80% quality
+                    );
+                } catch (error) {
+                    console.error('Compression error:', error);
+                    URL.revokeObjectURL(img.src);
+                    resolve(file); // Fallback to original
+                }
+            };
+
+            img.onerror = () => {
+                console.error('Image load error during compression');
+                URL.revokeObjectURL(img.src);
+                resolve(file); // Fallback to original
+            };
+
+            img.src = URL.createObjectURL(file);
+        });
     };
 
     const handleAnalyze = async () => {
@@ -57,7 +132,7 @@ const CropDiseaseDetector = () => {
             if (response.success && response.data) {
                 // Convert API response to internal format
                 const apiResult: PredictionResponse = response.data;
-
+                
                 const result: AnalysisResult = {
                     disease: apiResult.disease,
                     confidence: (apiResult.confidence * 100).toFixed(1) + '%',
@@ -82,12 +157,26 @@ const CropDiseaseDetector = () => {
     };
 
     const handleNewScan = () => {
+        // Clean up memory from previous image
+        if (selectedImage) {
+            URL.revokeObjectURL(selectedImage);
+        }
+        
         setSelectedImage(null);
         setSelectedFile(null);
         setResults(null);
         setError(null);
         setCurrentView('home');
     };
+
+    // Clean up memory on component unmount
+    React.useEffect(() => {
+        return () => {
+            if (selectedImage) {
+                URL.revokeObjectURL(selectedImage);
+            }
+        };
+    }, [selectedImage]);
 
     const handleViewChange = (view: string) => {
         setError(null); // Clear error when changing views
