@@ -29,7 +29,7 @@ const CropDiseaseDetector = () => {
         try {
             // Compress image if it's too large (especially for mobile photos)
             const compressedFile = await compressImageIfNeeded(file);
-            
+
             // Convert to base64 for preview
             const base64 = await cropDiseaseAPI.fileToBase64(compressedFile);
 
@@ -62,7 +62,7 @@ const CropDiseaseDetector = () => {
                     // Calculate new dimensions (max 1024px on longest side)
                     const maxSize = 1024;
                     let { width, height } = img;
-                    
+
                     if (width > height) {
                         if (width > maxSize) {
                             height = (height * maxSize) / width;
@@ -80,7 +80,7 @@ const CropDiseaseDetector = () => {
 
                     // Draw and compress
                     ctx?.drawImage(img, 0, 0, width, height);
-                    
+
                     canvas.toBlob(
                         (blob) => {
                             if (blob) {
@@ -132,7 +132,7 @@ const CropDiseaseDetector = () => {
             if (response.success && response.data) {
                 // Convert API response to internal format
                 const apiResult: PredictionResponse = response.data;
-                
+
                 const result: AnalysisResult = {
                     disease: apiResult.disease,
                     confidence: (apiResult.confidence * 100).toFixed(1) + '%',
@@ -161,7 +161,7 @@ const CropDiseaseDetector = () => {
         if (selectedImage) {
             URL.revokeObjectURL(selectedImage);
         }
-        
+
         setSelectedImage(null);
         setSelectedFile(null);
         setResults(null);

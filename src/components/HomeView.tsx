@@ -110,7 +110,7 @@ const HomeView: React.FC<HomeViewProps> = ({ onImageUpload, onViewChange, fileIn
                 <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100">
                     <div className="grid grid-cols-3 divide-x divide-gray-100">
                         <div className="text-center">
-                            <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">24K+</div>
+                            <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">77K+</div>
                             <div className="text-xs md:text-sm text-gray-500">Images Trained</div>
                         </div>
                         <div className="text-center">
@@ -118,7 +118,7 @@ const HomeView: React.FC<HomeViewProps> = ({ onImageUpload, onViewChange, fileIn
                             <div className="text-xs md:text-sm text-gray-500">Accuracy</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-blue-600">22</div>
+                            <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-blue-600">18</div>
                             <div className="text-xs md:text-sm text-gray-500">Disease Types</div>
                         </div>
                     </div>

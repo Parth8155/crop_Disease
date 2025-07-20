@@ -117,7 +117,7 @@ class CropDiseaseAPI {
           // Don't set Content-Type for FormData, let browser set it with boundary
         }
       });
-
+      console.log(response);
       clearTimeout(timeoutId);
       const data = await response.json();
 
