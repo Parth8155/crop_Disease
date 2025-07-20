@@ -12,43 +12,64 @@ const HomeView: React.FC<HomeViewProps> = ({ onImageUpload, onViewChange, fileIn
 
     // Prevent default drag behaviors on the window
     React.useEffect(() => {
-        const preventDefaults = (e: DragEvent) => {
+        const preventDefaults = (e: Event) => {
             e.preventDefault();
             e.stopPropagation();
         };
 
-        const handleWindowDrop = (e: DragEvent) => {
+        const handleWindowDragOver = (e: Event) => {
             e.preventDefault();
             e.stopPropagation();
+            const dragEvent = e as DragEvent;
+            if (dragEvent.dataTransfer) {
+                dragEvent.dataTransfer.dropEffect = 'none'; // Show "not allowed" cursor by default
+            }
+        };
+
+        const handleWindowDrop = (e: Event) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Window drop prevented');
         };
 
         // Add event listeners to prevent default browser behavior
-        document.addEventListener('dragenter', preventDefaults);
-        document.addEventListener('dragover', preventDefaults);
-        document.addEventListener('drop', handleWindowDrop);
+        document.addEventListener('dragenter', preventDefaults, false);
+        document.addEventListener('dragover', handleWindowDragOver, false);
+        document.addEventListener('drop', handleWindowDrop, false);
 
         return () => {
-            document.removeEventListener('dragenter', preventDefaults);
-            document.removeEventListener('dragover', preventDefaults);
-            document.removeEventListener('drop', handleWindowDrop);
+            document.removeEventListener('dragenter', preventDefaults, false);
+            document.removeEventListener('dragover', handleWindowDragOver, false);
+            document.removeEventListener('drop', handleWindowDrop, false);
         };
     }, []);
 
     const handleDragEnter = (e: React.DragEvent) => {
         e.preventDefault();
         e.stopPropagation();
+        console.log('Drag enter detected');
         setIsDragOver(true);
     };
 
     const handleDragLeave = (e: React.DragEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsDragOver(false);
+        // Only set dragOver to false if we're leaving the drop zone itself
+        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+        const x = e.clientX;
+        const y = e.clientY;
+        
+        if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+            console.log('Drag leave detected - outside bounds');
+            setIsDragOver(false);
+        }
     };
 
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
         e.stopPropagation();
+        // Ensure we show the correct drop effect
+        e.dataTransfer.dropEffect = 'copy';
     };
 
     const handleDrop = (e: React.DragEvent) => {
@@ -56,22 +77,47 @@ const HomeView: React.FC<HomeViewProps> = ({ onImageUpload, onViewChange, fileIn
         e.stopPropagation();
         setIsDragOver(false);
 
+        console.log('Drop event triggered');
+        console.log('Files dropped:', e.dataTransfer.files.length);
+
         const files = Array.from(e.dataTransfer.files);
+        console.log('Files:', files.map(f => ({ name: f.name, type: f.type, size: f.size })));
+        
         const imageFile = files.find(file => file.type.startsWith('image/'));
 
         if (imageFile && fileInputRef.current) {
-            // Create a new FileList-like object
-            const dt = new DataTransfer();
-            dt.items.add(imageFile);
-            fileInputRef.current.files = dt.files;
+            console.log('Valid image file found:', imageFile.name);
+            
+            try {
+                // Create a new DataTransfer object and add the file
+                const dt = new DataTransfer();
+                dt.items.add(imageFile);
+                
+                // Set the files on the input element
+                fileInputRef.current.files = dt.files;
 
-            // Create a synthetic event
-            const syntheticEvent = {
-                target: fileInputRef.current,
-                currentTarget: fileInputRef.current
-            } as React.ChangeEvent<HTMLInputElement>;
+                // Create a proper synthetic event that matches the expected signature
+                const syntheticEvent = {
+                    target: {
+                        ...fileInputRef.current,
+                        files: dt.files
+                    },
+                    currentTarget: {
+                        ...fileInputRef.current,
+                        files: dt.files
+                    }
+                } as React.ChangeEvent<HTMLInputElement>;
 
-            onImageUpload(syntheticEvent);
+                console.log('Calling onImageUpload with synthetic event');
+                // Call the upload handler
+                onImageUpload(syntheticEvent);
+            } catch (error) {
+                console.error('Error processing dropped file:', error);
+            }
+        } else if (!imageFile) {
+            console.log('No valid image file found in drop');
+        } else {
+            console.log('fileInputRef is null');
         }
     };
     return (
