@@ -1,7 +1,7 @@
 // API configuration and services for crop disease detection
 
 // Use environment variable for API URL, fallback to production URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://crop-backend-api-b8byddeccga5cug5.australiacentral-01.azurewebsites.net';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'crop-backend-api-b8byddeccga5cug5.centralindia-01.azurewebsites.net';
 
 export interface PredictionResponse {
   disease: string;
